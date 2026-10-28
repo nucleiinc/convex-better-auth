@@ -105,6 +105,14 @@ an `id_token` from the token exchange. Use the built-in Microsoft provider for
 `common`, `organizations`, or `consumers`. Follow the upstream guide's
 [Microsoft migration steps](https://www.better-auth.com/docs/guides/1-7-upgrade-guide#migrate-microsoft-account-identifiers).
 
+### Proxy headers
+
+Better Auth 1.7 ignores forwarded host and protocol headers unless
+`advanced.trustedProxyHeaders` is `true`. Prefer an explicit `baseURL`. If your
+deployment intentionally uses proxy headers to select a dynamic host, check this
+setting during migration. Enable it only when your trusted proxy replaces
+client-supplied forwarded headers.
+
 ### Database joins
 
 Move `experimental.joins` to `advanced.database.joins`. The Convex adapter
