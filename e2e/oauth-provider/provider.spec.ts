@@ -1,5 +1,6 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
-import { test, expect, type APIRequestContext } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import type { APIRequestContext } from "@playwright/test";
 import { createLocalJWKSet, jwtVerify } from "jose";
 
 const site = "http://127.0.0.1:3211";

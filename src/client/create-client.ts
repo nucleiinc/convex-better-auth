@@ -19,10 +19,10 @@ import { corsRouter } from "convex-helpers/server/cors";
 import type defaultSchema from "../component/schema.js";
 import type { CreateAuth, GenericCtx } from "./index.js";
 import type { TrustedOriginsOption } from "../utils/index.js";
+import type { BetterAuthOptions } from "better-auth/minimal";
 
-const getOpenIdConfigPath = (plugins: unknown) =>
-  Array.isArray(plugins) &&
-  plugins.some((plugin) => plugin?.id === "oauth-provider")
+const getOpenIdConfigPath = (plugins: BetterAuthOptions["plugins"]) =>
+  plugins?.some((plugin) => plugin.id === "oauth-provider")
     ? "/.well-known/openid-configuration"
     : "/convex/.well-known/openid-configuration";
 

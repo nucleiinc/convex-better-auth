@@ -199,7 +199,8 @@ const findIndex = (
   if (!table) {
     throw new Error(`Table ${args.model} not found`);
   }
-  const indexes = table[" indexes"]();
+  const indexes: { indexDescriptor: string; fields: string[] }[] =
+    table[" indexes"]();
   const sortField = args.sortBy?.field;
 
   // We internally use _creationTime in place of Better Auth's createdAt
@@ -471,34 +472,58 @@ const generateQuery = (
     values?.lte !== undefined ||
     values?.gt !== undefined ||
     values?.gte !== undefined;
-  const indexedQuery = usableIndex
-    ? query.withIndex(
-        usableIndex.indexDescriptor,
-        hasValues
-          ? (q: any) => {
-              for (const [field, value] of values?.eq ?? []) {
-                q = q.eq(field, value);
+  // Convex indexes distinguish null from an omitted optional field.
+  // Merge both equality ranges to match Better Auth's null guards.
+  type IndexEquality = readonly [
+    string,
+    Infer<typeof adapterWhereValidator>["value"] | undefined,
+  ];
+  const equalityRanges = (values?.eq ?? []).reduce<IndexEquality[][]>(
+    (ranges, [field, value]) =>
+      ranges.flatMap((range): IndexEquality[][] =>
+        value === null
+          ? [
+              [...range, [field, null]],
+              [...range, [field, undefined]],
+            ]
+          : [[...range, [field, value]]]
+      ),
+    [[]]
+  );
+  const queries = equalityRanges.map((equalities) => {
+    const indexedQuery = usableIndex
+      ? query.withIndex(
+          usableIndex.indexDescriptor,
+          hasValues
+            ? (q: any) => {
+                for (const [field, value] of equalities) {
+                  q = q.eq(field, value);
+                }
+                if (values?.lt !== undefined) {
+                  q = q.lt(boundField, values.lt);
+                }
+                if (values?.lte !== undefined) {
+                  q = q.lte(boundField, values.lte);
+                }
+                if (values?.gt !== undefined) {
+                  q = q.gt(boundField, values.gt);
+                }
+                if (values?.gte !== undefined) {
+                  q = q.gte(boundField, values.gte);
+                }
+                return q;
               }
-              if (values?.lt !== undefined) {
-                q = q.lt(boundField, values.lt);
-              }
-              if (values?.lte !== undefined) {
-                q = q.lte(boundField, values.lte);
-              }
-              if (values?.gt !== undefined) {
-                q = q.gt(boundField, values.gt);
-              }
-              if (values?.gte !== undefined) {
-                q = q.gte(boundField, values.gte);
-              }
-              return q;
-            }
-          : undefined
-      )
-    : query;
-  const orderedQuery = args.sortBy
-    ? indexedQuery.order(args.sortBy.direction === "desc" ? "desc" : "asc")
-    : indexedQuery;
+            : undefined
+        )
+      : query;
+    return args.sortBy
+      ? indexedQuery.order(args.sortBy.direction)
+      : indexedQuery;
+  });
+  const orderedQuery =
+    usableIndex && queries.length > 1
+      ? mergedStream(queries, usableIndex.fields.slice(values?.eq.length ?? 0))
+      : queries[0];
   if (!usableIndex && indexFields?.length) {
     // eslint-disable-next-line no-console
     console.warn(
@@ -575,6 +600,7 @@ export const paginate = async <
   const uniqueWhere = args.where?.find(
     (w) =>
       (!w.operator || w.operator === "eq") &&
+      w.value !== null &&
       (isUniqueField(betterAuthSchema, args.model, w.field) ||
         w.field === "_id")
   );

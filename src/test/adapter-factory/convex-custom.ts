@@ -4,14 +4,15 @@ import { twoFactor } from "better-auth/plugins/two-factor";
 import { expect } from "vitest";
 import { constraintsProfileOptions } from "../../component/testProfiles/auth-options.constraints.js";
 
-const withBetterAuthOptions = (
-  modifyBetterAuthOptions: (
+const withBetterAuthOptions =
+  (
+    modifyBetterAuthOptions: (
+      options: BetterAuthOptions,
+      shouldRunMigrations: boolean
+    ) => Promise<unknown>,
     options: BetterAuthOptions,
-    shouldRunMigrations: boolean,
-  ) => Promise<unknown>,
-  options: BetterAuthOptions,
-  test: () => Promise<void>,
-) =>
+    test: () => Promise<void>
+  ) =>
   async () => {
     await modifyBetterAuthOptions(options, true);
     try {
@@ -43,7 +44,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: "a",
             },
           ],
-        }),
+        })
       ).toEqual([]);
       expect(
         await adapter.findMany({
@@ -55,7 +56,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: "a",
             },
           ],
-        }),
+        })
       ).toEqual([]);
       expect(
         await adapter.findMany({
@@ -67,7 +68,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: "a",
             },
           ],
-        }),
+        })
       ).toEqual([user]);
       expect(
         await adapter.findMany({
@@ -79,7 +80,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: "ab",
             },
           ],
-        }),
+        })
       ).toEqual([user]);
     },
 
@@ -104,7 +105,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: "wrong name",
             },
           ],
-        }),
+        })
       ).toEqual(null);
       expect(
         await adapter.findOne({
@@ -119,7 +120,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: "foo",
             },
           ],
-        }),
+        })
       ).toEqual(user);
       expect(
         await adapter.findOne({
@@ -135,7 +136,7 @@ export const convexCustomTestSuite = createTestSuite(
               operator: "lt",
             },
           ],
-        }),
+        })
       ).toEqual(null);
       expect(
         await adapter.findOne({
@@ -151,7 +152,7 @@ export const convexCustomTestSuite = createTestSuite(
               operator: "lte",
             },
           ],
-        }),
+        })
       ).toEqual(user);
       expect(
         await adapter.findOne({
@@ -167,7 +168,7 @@ export const convexCustomTestSuite = createTestSuite(
               operator: "gt",
             },
           ],
-        }),
+        })
       ).toEqual(null);
       expect(
         await adapter.findOne({
@@ -183,7 +184,7 @@ export const convexCustomTestSuite = createTestSuite(
               operator: "gte",
             },
           ],
-        }),
+        })
       ).toEqual(user);
       expect(
         await adapter.findOne({
@@ -199,7 +200,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: ["wrong", "name"],
             },
           ],
-        }),
+        })
       ).toEqual(null);
       expect(
         await adapter.findOne({
@@ -215,7 +216,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: ["foo"],
             },
           ],
-        }),
+        })
       ).toEqual(user);
     },
 
@@ -290,7 +291,7 @@ export const convexCustomTestSuite = createTestSuite(
       expect(
         await adapter.findMany({
           model: "user",
-        }),
+        })
       ).toHaveLength(100);
 
       // Pagination has a hardcoded numItems max of 200, this tests that it can handle
@@ -299,13 +300,13 @@ export const convexCustomTestSuite = createTestSuite(
         await adapter.findMany({
           model: "user",
           limit: 250,
-        }),
+        })
       ).toHaveLength(250);
       expect(
         await adapter.findMany({
           model: "user",
           limit: 350,
-        }),
+        })
       ).toHaveLength(300);
     },
 
@@ -341,7 +342,7 @@ export const convexCustomTestSuite = createTestSuite(
             { field: "name", value: "bar", connector: "OR" },
             { field: "name", value: "foo", connector: "OR" },
           ],
-        }),
+        })
       ).toEqual(user);
     },
 
@@ -375,7 +376,7 @@ export const convexCustomTestSuite = createTestSuite(
             { field: "name", value: "foo", connector: "OR" },
           ],
           sortBy: { field: "name", direction: "asc" },
-        }),
+        })
       ).toEqual([barUser, fooUser]);
       expect(
         await adapter.findMany({
@@ -385,7 +386,7 @@ export const convexCustomTestSuite = createTestSuite(
             { field: "name", value: "foo", connector: "OR" },
           ],
           sortBy: { field: "name", direction: "desc" },
-        }),
+        })
       ).toEqual([fooUser, barUser]);
     },
 
@@ -461,13 +462,13 @@ export const convexCustomTestSuite = createTestSuite(
             model: "user",
             where: [],
             update: { name: "bar" },
-          }),
+          })
         ).toBeNull();
         expect(
           await adapter.findOne({
             model: "user",
             where: [{ field: "id", value: user.id }],
-          }),
+          })
         ).toEqual(user);
       },
 
@@ -505,13 +506,13 @@ export const convexCustomTestSuite = createTestSuite(
           await adapter.findOne({
             model: "user",
             where: [{ field: "id", value: foo.id }],
-          }),
+          })
         ).toMatchObject({ emailVerified: true });
         expect(
           await adapter.findOne({
             model: "user",
             where: [{ field: "id", value: foobar.id }],
-          }),
+          })
         ).toMatchObject({ emailVerified: true });
       },
 
@@ -545,9 +546,9 @@ export const convexCustomTestSuite = createTestSuite(
             model: "account",
             where: [{ field: "accountId", value: "shared-account" }],
             update: { issuer: "issuer-c" },
-          }),
+          })
         ).rejects.toThrow(
-          "account unique constraint issuer+accountId already exists",
+          "account unique constraint issuer+accountId already exists"
         );
 
         const accounts = await adapter.findMany({
@@ -559,102 +560,104 @@ export const convexCustomTestSuite = createTestSuite(
           expect.arrayContaining([
             expect.objectContaining({ issuer: "issuer-a" }),
             expect.objectContaining({ issuer: "issuer-b" }),
-          ]),
+          ])
         );
       },
 
-    "should allow a full-page unique update and reject larger updates": async () => {
-      for (let i = 0; i < 200; i += 1) {
+    "should allow a full-page unique update and reject larger updates":
+      async () => {
+        for (let i = 0; i < 200; i += 1) {
+          await adapter.create({
+            model: "account",
+            data: {
+              issuer: `original-${i}`,
+              accountId: `bulk-account-${i}`,
+              providerId: "bulk-provider",
+              userId: `bulk-user-${i}`,
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+            },
+          });
+        }
+
+        await expect(
+          adapter.updateMany({
+            model: "account",
+            where: [{ field: "providerId", value: "bulk-provider" }],
+            update: { issuer: "full-page-issuer" },
+          })
+        ).resolves.toBe(200);
+        await expect(
+          adapter.findOne({
+            model: "account",
+            where: [{ field: "accountId", value: "bulk-account-0" }],
+          })
+        ).resolves.toMatchObject({ issuer: "full-page-issuer" });
+
         await adapter.create({
           model: "account",
           data: {
-            issuer: `original-${i}`,
-            accountId: `bulk-account-${i}`,
+            issuer: "overflow-issuer",
+            accountId: "bulk-overflow",
             providerId: "bulk-provider",
-            userId: `bulk-user-${i}`,
+            userId: "bulk-user-overflow",
             createdAt: Date.now(),
             updatedAt: Date.now(),
           },
         });
-      }
 
-      await expect(
-        adapter.updateMany({
-          model: "account",
-          where: [{ field: "providerId", value: "bulk-provider" }],
-          update: { issuer: "full-page-issuer" },
-        }),
-      ).resolves.toBe(200);
-      await expect(
-        adapter.findOne({
-          model: "account",
-          where: [{ field: "accountId", value: "bulk-account-0" }],
-        }),
-      ).resolves.toMatchObject({ issuer: "full-page-issuer" });
+        await expect(
+          adapter.updateMany({
+            model: "account",
+            where: [{ field: "providerId", value: "bulk-provider" }],
+            update: { issuer: "updated-issuer" },
+          })
+        ).rejects.toThrow(
+          "Cannot update unique fields across multiple pages in account"
+        );
 
-      await adapter.create({
-        model: "account",
-        data: {
-          issuer: "overflow-issuer",
-          accountId: "bulk-overflow",
-          providerId: "bulk-provider",
-          userId: "bulk-user-overflow",
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        },
-      });
+        await expect(
+          adapter.findOne({
+            model: "account",
+            where: [{ field: "accountId", value: "bulk-account-0" }],
+          })
+        ).resolves.toMatchObject({ issuer: "full-page-issuer" });
+      },
 
-      await expect(
-        adapter.updateMany({
-          model: "account",
-          where: [{ field: "providerId", value: "bulk-provider" }],
-          update: { issuer: "updated-issuer" },
-        }),
-      ).rejects.toThrow(
-        "Cannot update unique fields across multiple pages in account",
-      );
+    "should allow atomic ID-set unique updates larger than one page":
+      async () => {
+        for (let i = 0; i < 201; i += 1) {
+          await adapter.create({
+            model: "account",
+            data: {
+              issuer: `original-${i}`,
+              accountId: `or-bulk-account-${i}`,
+              providerId: i % 2 === 0 ? "or-bulk-a" : "or-bulk-b",
+              userId: `or-bulk-user-${i}`,
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+            },
+          });
+        }
 
-      await expect(
-        adapter.findOne({
-          model: "account",
-          where: [{ field: "accountId", value: "bulk-account-0" }],
-        }),
-      ).resolves.toMatchObject({ issuer: "full-page-issuer" });
-    },
+        await expect(
+          adapter.updateMany({
+            model: "account",
+            where: [
+              { field: "providerId", value: "or-bulk-a", connector: "OR" },
+              { field: "providerId", value: "or-bulk-b", connector: "OR" },
+            ],
+            update: { issuer: "atomic-id-set-issuer" },
+          })
+        ).resolves.toBe(201);
 
-    "should allow atomic ID-set unique updates larger than one page": async () => {
-      for (let i = 0; i < 201; i += 1) {
-        await adapter.create({
-          model: "account",
-          data: {
-            issuer: `original-${i}`,
-            accountId: `or-bulk-account-${i}`,
-            providerId: i % 2 === 0 ? "or-bulk-a" : "or-bulk-b",
-            userId: `or-bulk-user-${i}`,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-          },
-        });
-      }
-
-      await expect(
-        adapter.updateMany({
-          model: "account",
-          where: [
-            { field: "providerId", value: "or-bulk-a", connector: "OR" },
-            { field: "providerId", value: "or-bulk-b", connector: "OR" },
-          ],
-          update: { issuer: "atomic-id-set-issuer" },
-        }),
-      ).resolves.toBe(201);
-
-      await expect(
-        adapter.findOne({
-          model: "account",
-          where: [{ field: "accountId", value: "or-bulk-account-0" }],
-        }),
-      ).resolves.toMatchObject({ issuer: "atomic-id-set-issuer" });
-    },
+        await expect(
+          adapter.findOne({
+            model: "account",
+            where: [{ field: "accountId", value: "or-bulk-account-0" }],
+          })
+        ).resolves.toMatchObject({ issuer: "atomic-id-set-issuer" });
+      },
 
     "should reject new accounts without the required issuer": async () => {
       const account = {
@@ -669,13 +672,13 @@ export const convexCustomTestSuite = createTestSuite(
         adapter.create({
           model: "account",
           data: account as any,
-        }),
+        })
       ).rejects.toThrow("Missing required field account.issuer");
       await expect(
         adapter.create({
           model: "account",
           data: { ...account, issuer: null } as any,
-        }),
+        })
       ).rejects.toThrow("Missing required field account.issuer");
     },
 
@@ -741,7 +744,7 @@ export const convexCustomTestSuite = createTestSuite(
         await adapter.count({
           model: "user",
           where: [{ field: "name", value: "foo" }],
-        }),
+        })
       ).toEqual(1);
     },
 
@@ -758,13 +761,13 @@ export const convexCustomTestSuite = createTestSuite(
         await adapter.findOne({
           model: "user",
           where: [{ field: "emailVerified", value: true }],
-        }),
+        })
       ).toEqual(user);
       expect(
         await adapter.findOne({
           model: "user",
           where: [{ field: "emailVerified", value: false }],
-        }),
+        })
       ).toEqual(null);
     },
 
@@ -799,7 +802,7 @@ export const convexCustomTestSuite = createTestSuite(
                 value: null,
               },
             ],
-          }),
+          })
         ).toEqual(null);
       },
 
@@ -851,7 +854,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: nullRangeAccountId,
             },
           ],
-        }),
+        })
       ).toEqual(nullRangeAccount);
 
       expect(
@@ -871,7 +874,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: nullRangeAccountId,
             },
           ],
-        }),
+        })
       ).toEqual(nullRangeAccount);
 
       expect(
@@ -891,7 +894,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: nonNullRangeAccountId,
             },
           ],
-        }),
+        })
       ).toEqual(nonNullRangeAccount);
 
       expect(
@@ -911,7 +914,7 @@ export const convexCustomTestSuite = createTestSuite(
               value: nonNullRangeAccountId,
             },
           ],
-        }),
+        })
       ).toEqual(nonNullRangeAccount);
     },
 
@@ -925,7 +928,7 @@ export const convexCustomTestSuite = createTestSuite(
           adapter.create({
             model: "user",
             data: { name: "different name", email: "foo@bar.com" },
-          }),
+          })
         ).rejects.toThrow("user email already exists");
       },
 
@@ -942,7 +945,7 @@ export const convexCustomTestSuite = createTestSuite(
       ]);
       expect(consumed.filter(Boolean)).toEqual([user]);
       await expect(
-        adapter.consumeOne({ model: "user", where }),
+        adapter.consumeOne({ model: "user", where })
       ).resolves.toBeNull();
     },
 
@@ -981,9 +984,9 @@ export const convexCustomTestSuite = createTestSuite(
             model: "rateLimit",
             where,
             increment: { count: 1 },
-          }),
+          })
         ).resolves.toBeNull();
-      },
+      }
     ),
 
     "should increment a nullable legacy counter from zero":
@@ -1006,13 +1009,15 @@ export const convexCustomTestSuite = createTestSuite(
               model: "twoFactor",
               where: [{ field: "id", value: factor.id }],
               increment: { failedVerificationCount: 1 },
-            }),
+            })
           ).resolves.toMatchObject({ failedVerificationCount: 1 });
-        },
+        }
       ),
 
     "should restore Better Auth options after a custom test": async () => {
-      expect(getBetterAuthOptions().plugins).toEqual(constraintsProfileOptions.plugins);
+      expect(getBetterAuthOptions().plugins).toEqual(
+        constraintsProfileOptions.plugins
+      );
       expect(getBetterAuthOptions().rateLimit).toBeUndefined();
     },
 
@@ -1030,7 +1035,7 @@ export const convexCustomTestSuite = createTestSuite(
         await adapter.findOne({
           model: "user",
           where: [{ field: "createdAt", value: now }],
-        }),
+        })
       ).toEqual(user);
       expect(typeof user.createdAt).toBe("number");
     },
@@ -1054,8 +1059,8 @@ export const convexCustomTestSuite = createTestSuite(
               mode: "insensitive",
             },
           ],
-        }),
+        })
       ).rejects.toThrow(/mode: "insensitive"/);
     },
-  }),
+  })
 );

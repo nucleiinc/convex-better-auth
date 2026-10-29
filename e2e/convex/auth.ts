@@ -1,7 +1,9 @@
-import { createClient, type GenericCtx } from "@convex-dev/better-auth";
+import { createClient } from "@convex-dev/better-auth";
+import type { GenericCtx } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import { oauthProvider } from "@better-auth/oauth-provider";
-import { betterAuth, type BetterAuthOptions } from "better-auth/minimal";
+import { betterAuth } from "better-auth/minimal";
+import type { BetterAuthOptions } from "better-auth/minimal";
 import { jwt } from "better-auth/plugins/jwt";
 import { components } from "./_generated/api";
 import type { DataModel } from "./_generated/dataModel";
