@@ -40,6 +40,7 @@ jobs:
           cd examples/tanstack && npm i &
           wait
       - name: Publish package for testing branch
+        if: github.repository == 'convex/better-auth'
         run:
           npx pkg-pr-new publish || echo "Have you set up pkg-pr-new for this
           repo?"

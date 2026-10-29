@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createAuthClient } from "better-auth/react";
+import { convexClient } from "../plugins/convex/client.js";
 import {
   crossDomainCapability,
   crossDomainClient,
@@ -19,7 +20,8 @@ describe("handleCrossDomainCallback", () => {
   it("preserves the token when the client lacks cross-domain support", async () => {
     const authClient = createAuthClient({
       baseURL: "https://example.com",
-    }) as unknown as RequiredAuthClient;
+      plugins: [convexClient()],
+    });
     const replaceUrl = vi.fn();
 
     await handleCrossDomainCallback(
